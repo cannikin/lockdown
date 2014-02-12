@@ -7,6 +7,8 @@ GEM
       addressable (>= 2.1.1)
       eventmachine (>= 0.12.9)
     eventmachine (1.0.3)
+    haml (4.0.4)
+      tilt
     json (1.8.1)
     rack (1.5.2)
     rack-protection (1.5.2)
@@ -30,6 +32,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  haml
   json
   serialport
   sinatra

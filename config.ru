@@ -1,3 +1,3 @@
-require './echo'
+require './lockdown'
 
 run Sinatra::Application
