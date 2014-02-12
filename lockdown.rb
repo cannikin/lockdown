@@ -9,9 +9,9 @@ set :poll_tick, 0.5
 set :arduino, Guarddog.new('/dev/tty.usbmodem1411')
 
 get '/' do
-  if !request.websocket?
-    start_polling unless settings.timer_running
+  start_polling unless settings.timer_running
 
+  if !request.websocket?
     haml :index
   else
     request.websocket do |ws|
@@ -24,7 +24,6 @@ get '/' do
       end
       ws.onclose do
         settings.sockets.delete(ws)
-        # settings.arduino.close if settings.sockets.empty?
       end
     end
   end
