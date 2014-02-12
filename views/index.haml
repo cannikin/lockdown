@@ -1,0 +1,32 @@
+!!!
+%html
+  %body
+    %h1 Lockdown
+    %form#form
+      %input(type="text" id="input" placeholder="message")
+    #messages
+
+  :javascript
+    var ws;
+    window.onload = function() {
+      (function(){
+        var show = function(el) {
+          return function(msg) { el.innerHTML = msg + '<br />' + el.innerHTML; }
+        }(document.getElementById('messages'));
+
+        ws           = new WebSocket('ws://' + window.location.host + window.location.pathname);
+        ws.onopen    = function()  { show('websocket opened'); };
+        ws.onclose   = function()  { show('websocket closed'); }
+        ws.onmessage = function(m) { show(m.data); };
+
+        var sender = function(f){
+          var input     = document.getElementById('input');
+          input.onclick = function(){ input.value = "" };
+          f.onsubmit    = function(){
+            ws.send(input.value);
+            input.value = "";
+            return false;
+          }
+        }(document.getElementById('form'));
+      })();
+    }
