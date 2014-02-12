@@ -1,42 +1,50 @@
-var ws, wsInterval, show, wsConnected;
+Lockdown = function() {
+  this.ws;
+  this.wsInterval;
+  this.wsConnected;
+  this.output = document.getElementById('messages');
 
-window.onload = function() {
-  var container = document.getElementById('messages');
+  this.attachEvents();
+  this.initializeWebSocket();
+};
 
-  show = function(message) {
-    container.innerHTML = message + '<br />' + container.innerHTML;
-  };
+Lockdown.prototype.attachEvents = function() {
+  var self = this;
 
   var input = document.getElementById('input');
   document.getElementById('form').onsubmit = function() {
-    ws.send(input.value);
+    self.ws.send(input.value);
     input.value = "";
     return false;
   };
+};
 
-  initializeWebSocket();
-}
+Lockdown.prototype.show = function(message) {
+  this.output.innerHTML = message + '<br />' + this.output.innerHTML;
+};
 
-var initializeWebSocket = function() {
-  ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
-  ws.onopen = function() {
-    wsConnected = true;
-    show('websocket opened');
-    clearInterval(wsInterval);
+Lockdown.prototype.initializeWebSocket = function() {
+  var self = this;
+
+  this.ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
+  this.ws.onopen = function() {
+    self.wsConnected = true;
+    self.show('websocket opened');
+    clearInterval(self.wsInterval);
   };
-  ws.onclose = function() {
-    show('websocket closed');
-    if (wsConnected) {
-      wsInterval = setInterval(function() {
-        while (ws.readyState == 3) {
+  this.ws.onclose = function() {
+    self.show('websocket closed');
+    if (self.wsConnected) {
+      self.wsInterval = setInterval(function() {
+        while (self.ws.readyState == 3) {
           console.info("Trying to connect...");
-          initializeWebSocket();
+          self.initializeWebSocket();
         }
       }, 2000);
     }
-    wsConnected = false;
+    self.wsConnected = false;
   };
-  ws.onmessage = function(m) {
-    show(m.data);
+  this.ws.onmessage = function(m) {
+    self.show(m.data);
   };
-}
+};
