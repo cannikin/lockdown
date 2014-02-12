@@ -1,8 +1,12 @@
 require 'sinatra'
 require 'sinatra-websocket'
+require './guarddog'
+require 'pry'
+require 'pry-nav'
 
 set :server, 'thin'
 set :sockets, []
+set :guarddog, Guarddog.new('/dev/tty.usbmodem40111')
 
 get '/' do
   if !request.websocket?
@@ -12,13 +16,17 @@ get '/' do
       ws.onopen do
         ws.send("Hello World!")
         settings.sockets << ws
+        EM.next_tick { settings.sockets.each { |s| s.send(settings.guarddog.status.to_json) } }
       end
       ws.onmessage do |msg|
-        EM.next_tick { settings.sockets.each{|s| s.send(msg) } }
+        EM.next_tick { settings.sockets.each { |s| s.send(settings.guarddog.poll.to_json) } }
       end
       ws.onclose do
         warn("websocket closed")
         settings.sockets.delete(ws)
+        if settings.sockets.empty?
+          settings.guarddog.close
+        end
       end
     end
   end
