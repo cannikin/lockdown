@@ -6,7 +6,7 @@ set :server, 'thin'
 set :sockets, []
 set :timer_running, false
 set :poll_tick, 0.5
-set :arduino, Guarddog.new('/dev/tty.usbmodem1411')
+set :arduino, Guarddog.new(ENV['USB'])
 
 get '/' do
   start_polling unless settings.timer_running
