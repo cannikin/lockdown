@@ -48,6 +48,9 @@ helpers do
       last = settings.arduino.poll
       send_to_all(last.to_json) if last != []
     end
+    EM.add_shutdown_hook do
+      settings.arduino.close
+    end
     settings.timer_running = true
   end
 
