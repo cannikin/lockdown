@@ -17,10 +17,11 @@ get '/' do
     request.websocket do |ws|
       ws.onopen do
         settings.sockets << ws
+        ws.send settings.arduino.version.to_json
         ws.send settings.arduino.status.to_json
       end
       ws.onmessage do |msg|
-        send_to_all "Message received: #{msg}"
+        send_to_all "Echo: #{msg}"
       end
       ws.onclose do
         settings.sockets.delete(ws)
