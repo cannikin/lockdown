@@ -29,6 +29,12 @@ get '/' do
   end
 end
 
+get '/status' do
+  # @arduino = settings.arduino
+  @sockets = settings.sockets
+  haml :status
+end
+
 helpers do
 
   # Send a message to all websockets
