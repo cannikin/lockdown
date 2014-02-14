@@ -1,3 +1,5 @@
+const String VERSION = "0.1.0";
+
 const int EGRESS = 0;
 const int MOTION = 1;
 const int TRIP   = 2;
@@ -23,6 +25,24 @@ void setup() {
 }
 
 void loop() {
+  checkForIncoming();
+  checkAllSensors();
+}  
+
+void outputState(int i, int type) {
+  Serial.print("{\"result\":{\"type\":\"");
+  Serial.print(TYPES[type]);
+  Serial.print("\",\"id\":");
+  Serial.print(i);
+  Serial.print(",\"state\":");
+  Serial.print(states[i]);
+  Serial.print(",\"millis\":");
+  Serial.print(millis());
+  Serial.println("}}");
+}
+
+
+void checkForIncoming() {
   incoming = "";
   byte incomingByte;
   
@@ -33,42 +53,31 @@ void loop() {
       incoming += char(incomingByte);
     }
     
-    delay(10);
+    // give a chance for each byte to make it to the stream
+    delay(1);
   }
   
   if (incoming != "") {
-    // Serial.print(incoming);
-    if (incoming == "{\"message\":\"status\"}") {
+    if (incoming == "{\"method\":\"status\"}") {
       status();
+    } else if (incoming == "{\"method\":\"version\"}") {
+      version();
     } else { 
-      error("unknown message");
+      error("unknown method");
     }
   }
-  
+}
+
+
+void checkAllSensors() {
   for (int i=22; i<54; i++) {
-    //read the pushbutton value into a variable
-    states[i] = digitalRead(i);
-    
-    //print out the value of the pushbutton
-    if (states[i] != lastStates[i]) {
-      outputState(i, EGRESS);
-      lastStates[i] = states[i];
-    }
+    inputStatus(i, true);
   }
   
   digitalWrite(13, digitalRead(22));
-}  
-
-void outputState(int i, int type) {
-  Serial.print("{\"type\":\"");
-  Serial.print(TYPES[type]);
-  Serial.print("\",\"id\":");
-  Serial.print(i);
-  Serial.print(",\"state\":");
-  Serial.print(states[i]);
-  Serial.print(",\"millis\":");
-  Serial.print(millis());
-  Serial.println("}");
+  
+  // just a little bit of delay to debounce
+  delay(10);
 }
 
 
@@ -77,6 +86,27 @@ void status() {
   for (int i=22; i<54; i++) {
     outputState(i, EGRESS);
   }
+}
+
+
+// Get the state of a single input and optionally automatically output it
+void inputStatus(int id, bool output) {
+  states[id] = digitalRead(id);
+    
+  if (states[id] != lastStates[id]) {
+    if (output) {
+      outputState(id, EGRESS);
+    }
+    lastStates[id] = states[id];
+  }
+}
+
+
+// Return status all inputs
+void version() {
+  Serial.print("{\"result\":\"");
+  Serial.print(VERSION);
+  Serial.println("\"}");
 }
 
 
