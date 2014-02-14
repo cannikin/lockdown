@@ -45,6 +45,7 @@ helpers do
 
   # Start checking for new events every so often
   def start_polling
+    settings.arduino.connect!
     EM.add_periodic_timer(settings.poll_tick) do
       last = settings.arduino.poll
       send_to_all(last.to_json) if last != []
