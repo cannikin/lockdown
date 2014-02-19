@@ -1,3 +1,3 @@
-require './lockdown'
+require './app'
 
 run Sinatra::Application

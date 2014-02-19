@@ -1,8 +1,13 @@
+$:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+
 require 'sinatra'
 require 'sinatra-websocket'
 require 'sinatra/sequel'
+require './database'
+require './models'
+require './helpers'
 require 'sinatra/reloader' if development?
-require './guarddog'
+require 'guarddog'
 
 set :server, 'thin'
 set :sockets, []
@@ -22,9 +27,8 @@ get '/' do
   # start_polling unless settings.timer_running
 
   if !request.websocket?
-    @mode = :day
-    @egresses = [Egress.new(1, :door, 141, 140, :'hinge-left-open-down'),
-                 Egress.new(2, :window, 238, -9, :horizontal)]
+    @mode = Setting.first.mode
+    @doors_and_windows = Sensor.filter(:type => ['door', 'window', 'garage-door'])
 
     haml :index
   else
@@ -55,8 +59,9 @@ end
 
 
 # Puts the system into an alarm mode
-get '/mode/:mode' do
-
+post '/mode/:mode' do
+  Setting.first.update(:mode => params[:mode])
+  nil
 end
 
 
@@ -65,34 +70,4 @@ get '/status' do
   # @arduino = settings.arduino
   @sockets = settings.sockets
   haml :status
-end
-
-helpers do
-
-  # Send a message to all websockets
-  def send_to_all(message)
-    EM.next_tick { settings.sockets.each { |s| s.send(message) } }
-  end
-
-  # Start checking for new events every so often
-  def start_polling
-    settings.arduino.connect!
-    EM.add_periodic_timer(settings.poll_tick) do
-      last = settings.arduino.poll
-      send_to_all(last.to_json) if last != []
-    end
-    EM.add_shutdown_hook do
-      settings.arduino.close!
-    end
-    settings.timer_running = true
-  end
-
-  def class_for_egress(egress)
-    egress.type.to_s + ' ' + egress.orientation.to_s
-  end
-
-  def style_for_egress(egress)
-    "left: #{egress.left.to_s}px; top: #{egress.top.to_s}px"
-  end
-
 end

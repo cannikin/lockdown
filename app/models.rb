@@ -5,3 +5,6 @@ end
 class Layout < Sequel::Model
   one_to_one :sensor
 end
+
+class Setting < Sequel::Model
+end

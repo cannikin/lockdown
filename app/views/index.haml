@@ -14,11 +14,11 @@
     .container
       #modes.row
         .col-sm-4
-          %a#day(href="/mode/day" data-mode="day" class="#{'active' if @mode == :day}") Day
+          %a#day(href="/mode/day" data-mode="day" class="#{'active' if @mode == 'day'}") Day
         .col-sm-4
-          %a#night(href="/mode/night" data-mode="night" class="#{'active' if @mode == :night}") Night
+          %a#night(href="/mode/night" data-mode="night" class="#{'active' if @mode == 'night'}") Night
         .col-sm-4
-          %a#away(href="/mode/away" data-mode="away" class="#{'active' if @mode == :away}") Away
+          %a#away(href="/mode/away" data-mode="away" class="#{'active' if @mode == 'away'}") Away
 
       #videos.row
         .left.col-sm-6
@@ -27,14 +27,14 @@
           %img.video(src="http://placekitten.com/1024/640")
 
       #house.row
-        - @egresses.each do |egress|
-          %div(class="#{class_for_egress(egress)}" style="#{style_for_egress(egress)}")
+        - @doors_and_windows.each do |sensor|
+          %div[sensor](class="#{class_for_sensor(sensor)}" style="#{style_for_sensor(sensor)}")
 
       #data.row
         #today.weather.col-sm-4
         #time.col-sm-4
           %time(datetime="#{Time.now.strftime('%F %T')}")= Time.now.strftime('%-l:%M')
-          %date= Time.now.strftime('%A %B %-d')
+          %span= Time.now.strftime('%A %B %-d')
         #tomorrow.weather.col-sm-4
 
     :javascript

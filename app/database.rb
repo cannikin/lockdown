@@ -1,26 +1,31 @@
-set :database, 'sqlite://lockdown.db'
+set :database, 'sqlite://db/lockdown.db'
 
-# define database migrations. pending migrations are run at startup and
-# are guaranteed to run exactly once per database.
 migration "create sensors" do
   database.create_table :sensors do
     primary_key :id
-    integer     :sensor_id
-    string      :type
-    boolean     :state
-    timestamp   :updated_at, :null => false
+    String      :arduino_id
+    String      :type
+    Integer     :value
+    DateTime    :updated_at, :null => false
 
-    index :sensor_id, :unique => true
+    index :arduino_id, :unique => true
   end
 end
 
 migration "create layouts" do
   database.create_table :layouts do
     primary_key :id
-    integer     :sensor_id
-    integer     :left
-    integer     :top
-    string      :orientation
+    Integer     :sensor_id
+    Integer     :left
+    Integer     :top
+    String      :orientation
+  end
+end
+
+migration "create settings" do
+  database.create_table :settings do
+    primary_key :id
+    String      :mode
   end
 end
 

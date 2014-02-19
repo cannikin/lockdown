@@ -77,9 +77,11 @@ Lockdown.prototype.handleMessage = function(message) {
 
 // Switch from/to day/night/away modes
 Lockdown.prototype.changeMode = function(el) {
+  var modeName = $(el).data('mode')
   $('#modes a').removeClass('active');
   $(el).addClass('active');
-  $('body').removeClass('day night away').addClass($(el).data('mode'));
+  $('body').removeClass('day night away').addClass(modeName);
+  $.post('/mode/'+modeName);
 };
 
 
