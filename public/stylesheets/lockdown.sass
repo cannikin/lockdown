@@ -1,0 +1,117 @@
+body
+  font-family: 'Helvetica Neue'
+  font-weight: 200
+  background: #212D68 -webkit-linear-gradient(#212D68, #000000) top center no-repeat
+  height: 100%
+  padding-top: 30px
+  transition: all 1s
+
+.container
+  width: 960px
+  height: 1252px
+
+.row
+  margin-bottom: 30px
+
+#modes
+  -webkit-font-smoothing: antialiased
+  div
+    text-align: center
+    display: table
+  a
+    display: table-cell
+    text-transform: uppercase
+    font-size: 42px
+    height: 110px
+    color: #666791
+    vertical-align: middle
+    border-radius: 4px
+    border: 1px solid rgba(#ffffff, 0.7)
+    background-color: transparent
+    background-position: top center
+    background-repeat: no-repeat
+    background-size: 100%
+    &.active
+      border-width: 8px
+      font-weight: 800
+      letter-spacing: -0.05em
+    &:hover
+      text-decoration: none
+  #day
+    color: #1F2A61
+    background-image: url('/images/button-day-bg.png')
+  #night
+    color: #ffffff
+    background-image: url('/images/button-night-bg.png')
+  #away
+    color: #555B7C
+    background-image: url('/images/button-away-bg.png')
+
+#videos
+  height: 280px
+  .left
+    text-align: left
+    position: relative
+  .right
+    text-align: right
+    position: relative
+    img
+      right: 15px
+  img
+    width: 450px
+    transition: width 0.5s
+    position: absolute
+    &.open
+      max-width: auto
+      width: 930px
+      z-index: 2
+
+#house
+  position: relative
+  margin-top: 50px
+  height: 600px
+  background: transparent url('/images/house.png') top center no-repeat
+  background-size: 75%
+
+.window.horizontal
+  position: absolute
+  z-index: 2
+  width: 59px
+  height: 48px
+  background: transparent url('/images/window-horizontal.png') top center repeat-x
+  // opacity: 0
+  transition: all .5s
+  &.open
+    opacity: 1
+
+.door
+  position: absolute
+  z-index: 2
+  width: 61px
+  height: 61px
+  // opacity: 0
+  background-position: top center
+  background-repeat: no-repeat
+  background-size: 100%
+  transition: all .5s
+  &.open
+    opacity: 1
+  &.hinge-left-open-down
+    background-image: url('/images/door-hinge-left-open-down.png')
+
+#data
+  -webkit-font-smoothing: antialiased
+  .col-sm-4
+    text-align: center
+  time
+    display: block
+    font-size: 96px
+    color: #ffffff
+    font-weight: 200
+    line-height: 1
+  date
+    display: block
+    font-size: 22px
+    color: #ffffff
+    font-weight: 200
+    line-height: 1

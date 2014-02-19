@@ -2,11 +2,40 @@
 %html
   %head
     %title Lockdown
-  %body
-    %h1 Lockdown
-    %form#form
-      %input(type="text" id="input" placeholder="message")
-    #messages
-    %script(src="/lockdown.js" type="text/javascript")
+    %meta(name="apple-mobile-web-app-capable" content="yes")
+    %meta(name="apple-mobile-web-app-status-bar-style" content="default")
+    %meta(name="viewport" content="user-scalable=no")
+    %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css")
+    %link(rel="stylesheet" href="/lockdown.css")
+    %script(src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js")
+    %script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
+    %script(src="/javascripts/lockdown.js" type="text/javascript")
+  %body(class="#{@mode.to_s}")
+    .container
+      #modes.row
+        .col-sm-4
+          %a#day(href="/mode/day" data-mode="day" class="#{'active' if @mode == :day}") Day
+        .col-sm-4
+          %a#night(href="/mode/night" data-mode="night" class="#{'active' if @mode == :night}") Night
+        .col-sm-4
+          %a#away(href="/mode/away" data-mode="away" class="#{'active' if @mode == :away}") Away
+
+      #videos.row
+        .left.col-sm-6
+          %img.video(src="http://10.0.0.22/mjpg/video.mjpg?resolution=1024x640&compression=30&fps=15")
+        .right.col-sm-6
+          %img.video(src="http://placekitten.com/1024/640")
+
+      #house.row
+        - @egresses.each do |egress|
+          %div(class="#{class_for_egress(egress)}" style="#{style_for_egress(egress)}")
+
+      #data.row
+        #today.weather.col-sm-4
+        #time.col-sm-4
+          %time(datetime="#{Time.now.strftime('%F %T')}")= Time.now.strftime('%-l:%M')
+          %date= Time.now.strftime('%A %B %-d')
+        #tomorrow.weather.col-sm-4
+
     :javascript
       new Lockdown();
