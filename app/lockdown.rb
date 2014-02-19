@@ -1,7 +1,8 @@
 require 'sinatra'
 require 'sinatra-websocket'
+require 'sinatra/sequel'
+require 'sinatra/reloader' if development?
 require './guarddog'
-require './egress'
 
 set :server, 'thin'
 set :sockets, []
