@@ -40,6 +40,15 @@ get '/' do
     #     settings.sockets.delete(ws)
     #   end
     # end
+    request.websocket do |ws|
+      ws.onopen do
+        settings.sockets << ws
+        send_to_all([{:foo => 'bar'}].to_json)
+      end
+      ws.onclose do
+        settings.sockets.delete(ws)
+      end
+    end
   end
 end
 

@@ -35,10 +35,12 @@ Lockdown.prototype.attachEvents = function() {
   }, 60000);
 };
 
-Lockdown.prototype.show = function(message) {
-  this.output.innerHTML = message + '<br />' + this.output.innerHTML;
-};
+// Lockdown.prototype.show = function(message) {
+//   this.output.innerHTML = message + '<br />' + this.output.innerHTML;
+// };
 
+
+// Start a websocket connection to the server for status updates
 Lockdown.prototype.initializeWebSocket = function() {
   var self = this;
 
@@ -61,20 +63,33 @@ Lockdown.prototype.initializeWebSocket = function() {
     self.wsConnected = false;
   };
   this.ws.onmessage = function(m) {
-    self.show(m.data);
+    self.handleMessage(m.data);
   };
 };
 
+
+// Do whatever needs to be done based on the message from the server
+Lockdown.prototype.handleMessage = function(message) {
+  var data = $.parseJSON(message);
+  console.info(data)
+  // this.show(message);
+};
+
+// Switch from/to day/night/away modes
 Lockdown.prototype.changeMode = function(el) {
   $('#modes a').removeClass('active');
   $(el).addClass('active');
   $('body').removeClass('day night away').addClass($(el).data('mode'));
 };
 
+
+// Zoom a video window
 Lockdown.prototype.scaleVideo = function(el) {
   $(el).toggleClass('open');
 };
 
+
+// Update the date/time at the bottom of the screen
 Lockdown.prototype.updateDateTime = function() {
   var now = new Date();
   var hour = now.getHours();
