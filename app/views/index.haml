@@ -11,6 +11,7 @@
     %script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
     %script(src="/javascripts/lockdown.js" type="text/javascript")
   %body(class="#{@mode.to_s}")
+    %audio#audio(src="/sounds/door-open.wav")
     .container
       #modes.row
         .col-sm-4
@@ -22,7 +23,8 @@
 
       #videos.row
         .left.col-sm-6
-          %img.video(src="http://10.0.0.22/mjpg/video.mjpg?resolution=1024x640&compression=30&fps=15")
+          / %img.video(src="http://10.0.0.22/mjpg/video.mjpg?resolution=1024x640&compression=30&fps=15")
+          %img.video(src="http://placekitten.com/1024/641")
         .right.col-sm-6
           %img.video(src="http://placekitten.com/1024/640")
 

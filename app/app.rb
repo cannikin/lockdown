@@ -44,7 +44,11 @@ get '/' do
       ws.onopen do
         settings.sockets << ws
           logger.info "Socket opened: #{ws.to_s}"
-        ws.send settings.guarddog.status.to_json
+        status_response = settings.guarddog.status
+          logger.info "Status response: #{status_response.inspect}"
+        guarddog_reponse = settings.guarddog_parser.parse(status_response, :log => false)
+          logger.info "GuarddogParser response: #{guarddog_reponse.inspect}"
+        ws.send guarddog_reponse.to_json
       end
       ws.onmessage do |msg|
           logger.info "WebSocket message received: #{msg.inspect}"
