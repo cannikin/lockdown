@@ -11,13 +11,6 @@ Lockdown = function() {
 Lockdown.prototype.attachEvents = function() {
   var self = this;
 
-  // var input = document.getElementById('input');
-  // document.getElementById('form').onsubmit = function() {
-  //   self.ws.send(input.value);
-  //   input.value = "";
-  //   return false;
-  // };
-
   // Watch buttons for clicks
   $('#modes').on('click', 'a', function(e) {
     self.changeMode(this);
@@ -35,10 +28,6 @@ Lockdown.prototype.attachEvents = function() {
   }, 60000);
 };
 
-// Lockdown.prototype.show = function(message) {
-//   this.output.innerHTML = message + '<br />' + this.output.innerHTML;
-// };
-
 
 // Start a websocket connection to the server for status updates
 Lockdown.prototype.initializeWebSocket = function() {
@@ -47,11 +36,11 @@ Lockdown.prototype.initializeWebSocket = function() {
   this.ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
   this.ws.onopen = function() {
     self.wsConnected = true;
-    self.show('websocket opened');
+    console.info('websocket opened');
     clearInterval(self.wsInterval);
   };
   this.ws.onclose = function() {
-    self.show('websocket closed');
+    console.info('websocket closed');
     if (self.wsConnected) {
       self.wsInterval = setInterval(function() {
         while (self.ws.readyState == 3) {
@@ -63,16 +52,24 @@ Lockdown.prototype.initializeWebSocket = function() {
     self.wsConnected = false;
   };
   this.ws.onmessage = function(m) {
-    self.handleMessage(m.data);
+    self.parseMessage(m.data);
   };
 };
 
 
 // Do whatever needs to be done based on the message from the server
-Lockdown.prototype.handleMessage = function(message) {
+Lockdown.prototype.parseMessage = function(message) {
+  var self = this;
   var data = $.parseJSON(message);
-  console.info(data)
-  // this.show(message);
+  $.each(data, function(index, item) {
+    switch(item.event) {
+    case 'egress':
+      self.updateHouse(item.data);
+      break;
+    default:
+      console.info(item.data);
+    }
+  });
 };
 
 // Switch from/to day/night/away modes
@@ -105,4 +102,10 @@ Lockdown.prototype.updateDateTime = function() {
     minute = '0' + minute;
   }
   $('time').attr('datetime', hour + ':' + minute + ':' + second).text(hour + ':' + minute);
+};
+
+
+// Update the state of the one of the house entry points
+Lockdown.prototype.updateHouse = function(data) {
+  $('#sensor_'+data.id).removeClass('open closed').addClass(data.value == '0' ? 'closed' : 'open');
 };

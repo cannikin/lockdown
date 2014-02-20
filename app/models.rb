@@ -7,4 +7,9 @@ class Layout < Sequel::Model
 end
 
 class Setting < Sequel::Model
+
+end
+
+class Event < Sequel::Model
+
 end

@@ -29,6 +29,18 @@ migration "create settings" do
   end
 end
 
+migration "create events" do
+  database.create_table :events do
+    primary_key :id
+    Integer     :arduino_id
+    String      :type
+    String      :value
+    Integer     :millis
+    DateTime    :created_at, :null => false
+  end
+end
+
+
 # you can also alter tables
 # migration "everything's better with bling" do
 #   database.alter_table :foos do

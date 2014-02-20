@@ -1,4 +1,5 @@
-# Talks to Arduino speaking the Lockdown protocol
+# Talks to Arduino speaking the Lockdown protocol. Turns JSON messages from
+# the Arduino into Ruby hashes
 
 require 'serialport'
 require 'json'

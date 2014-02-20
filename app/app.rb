@@ -8,12 +8,19 @@ require './models'
 require './helpers'
 require 'sinatra/reloader' if development?
 require 'guarddog'
+require 'web_socket_parser'
+require 'guarddog_parser'
+require 'pry'
+require 'pry-debugger'
 
 set :server, 'thin'
 set :sockets, []
 set :timer_running, false
 set :poll_tick, 0.5
-# set :arduino, Guarddog.new(ENV['USB'])
+set :guarddog, Guarddog.new(ENV['USB'])
+set :web_socket_parser, WebSocketParser.new
+set :guarddog_parser, GuarddogParser.new
+
 
 # For SASS stylesheets
 get '/*.css' do
@@ -22,9 +29,10 @@ get '/*.css' do
   sass filename.to_sym, :views => "#{settings.root}/public/stylesheets"
 end
 
+
 # Homepage
 get '/' do
-  # start_polling unless settings.timer_running
+  start_polling unless settings.timer_running
 
   if !request.websocket?
     @mode = Setting.first.mode
@@ -32,26 +40,21 @@ get '/' do
 
     haml :index
   else
-    # request.websocket do |ws|
-    #   ws.onopen do
-    #     settings.sockets << ws
-    #     ws.send settings.arduino.version.to_json
-    #     ws.send settings.arduino.status.to_json
-    #   end
-    #   ws.onmessage do |msg|
-    #     send_to_all "Echo: #{msg}"
-    #   end
-    #   ws.onclose do
-    #     settings.sockets.delete(ws)
-    #   end
-    # end
     request.websocket do |ws|
       ws.onopen do
         settings.sockets << ws
-        send_to_all([{:foo => 'bar'}].to_json)
+          logger.info "Socket opened: #{ws.to_s}"
+        ws.send settings.guarddog.status.to_json
+      end
+      ws.onmessage do |msg|
+          logger.info "WebSocket message received: #{msg.inspect}"
+        response = settings.web_socket_parser.parse(msg)
+          logger.info "SocketParser response: #{response.inspect}"
+        send_to_all response unless response.nil?
       end
       ws.onclose do
         settings.sockets.delete(ws)
+          logger.info "Socket closed: #{ws.to_s}"
       end
     end
   end
@@ -67,7 +70,7 @@ end
 
 # Get current status of all sensors
 get '/status' do
-  # @arduino = settings.arduino
+  @guarddog = settings.guarddog
   @sockets = settings.sockets
   haml :status
 end
