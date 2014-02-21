@@ -29,14 +29,14 @@ Lockdown.prototype.attachEvents = function() {
 
 
   // A mode is clicked
-  $doc.on('mode.click', function(el) {
+  $doc.on('mode.click', function(e, el) {
     var modeName = $(el).data('mode');
     self.ws.send(JSON.stringify({ event:'change_mode', data:{ mode:modeName } }));
   });
 
 
   // Mode is changed via server notice
-  $doc.on('mode.change', function(data) {
+  $doc.on('mode.change', function(e, data) {
     $('#modes a').removeClass('active');
     $('#modes #'+data.mode).addClass('active');
     $('body').removeClass('day night away').addClass(data.mode);
@@ -44,7 +44,7 @@ Lockdown.prototype.attachEvents = function() {
 
 
   // A video is clicked
-  $doc.on('video.click', function(el) {
+  $doc.on('video.click', function(e, el) {
     $(el).toggleClass('open');
   });
 

@@ -54,7 +54,7 @@ get '/' do
           logger.info "WebSocket message received: #{msg.inspect}"
         response = settings.web_socket_parser.parse(msg)
           logger.info "SocketParser response: #{response.inspect}"
-        send_to_all response unless response.nil?
+        send_to_all response unless response.empty?
       end
       ws.onclose do
         settings.sockets.delete(ws)
@@ -62,13 +62,6 @@ get '/' do
       end
     end
   end
-end
-
-
-# Puts the system into an alarm mode
-post '/mode/:mode' do
-  Setting.first.update(:mode => params[:mode])
-  nil
 end
 
 
