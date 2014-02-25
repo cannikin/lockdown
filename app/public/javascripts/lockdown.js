@@ -1,3 +1,7 @@
+// Handles all client interface logic. All communication happens through a
+// WebSocket to keep it as fast as possible. This also facilitates telling all
+// clients about events pretty much simultaneously.
+
 Lockdown = function() {
   this.ws;
   this.wsInterval;
@@ -6,12 +10,15 @@ Lockdown = function() {
   this.sounds = { open:'/sounds/door-open.wav',
                   closed:'/sounds/door-closed.wav' };
 
-  this.attachEvents();
+  this.attachBrowserEvents();
+  this.attachCustomEvents();
   this.startPeriodicTasks();
   this.initializeWebSocket();
 };
 
-Lockdown.prototype.attachEvents = function() {
+
+// Standard browser events. Translated into custom Lockdown events.
+Lockdown.prototype.attachBrowserEvents = function() {
   var self = this;
   var $doc = $(document);
 
@@ -27,6 +34,13 @@ Lockdown.prototype.attachEvents = function() {
     $doc.trigger('video.click', this);
   });
 
+};
+
+
+// Custom events that Lockdown fires
+Lockdown.prototype.attachCustomEvents = function() {
+  var self = this;
+  var $doc = $(document);
 
   // A mode is clicked
   $doc.on('mode.click', function(e, el) {
@@ -35,11 +49,18 @@ Lockdown.prototype.attachEvents = function() {
   });
 
 
-  // Mode is changed via server notice
+  // Server says the mode has changed
   $doc.on('mode.change', function(e, data) {
     $('#modes a').removeClass('active');
     $('#modes #'+data.mode).addClass('active');
     $('body').removeClass('day night away').addClass(data.mode);
+  });
+
+
+  // Sensor has changed values, update house graphic
+  $doc.on('house.event', function(e, data) {
+    var state = data.value == '0' ? 'closed' : 'open';
+    $('#sensor_'+data.id).removeClass('open closed').addClass(state);
   });
 
 
@@ -48,13 +69,10 @@ Lockdown.prototype.attachEvents = function() {
     $(el).toggleClass('open');
   });
 
-  // Workaround for iOS audio: click the house first to start audio playing
-  // $('#house').on('click', function() {
-  //   $('#audio').get(0).play();
-  // });
 };
 
 
+// Anything that should happen repeatedly
 Lockdown.prototype.startPeriodicTasks = function() {
   var self = this;
   // Update the date/time every second
@@ -71,15 +89,15 @@ Lockdown.prototype.initializeWebSocket = function() {
   this.ws = new WebSocket('ws://' + window.location.host + window.location.pathname);
   this.ws.onopen = function() {
     self.wsConnected = true;
-    console.info('websocket opened');
+    // console.info('websocket opened');
     clearInterval(self.wsInterval);
   };
   this.ws.onclose = function() {
-    console.info('websocket closed');
+    // console.info('websocket closed');
     if (self.wsConnected) {
       self.wsInterval = setInterval(function() {
         while (self.ws.readyState == 3) {
-          console.info("Trying to connect...");
+          // console.info("Trying to connect...");
           self.initializeWebSocket();
         }
       }, 2000);
@@ -99,13 +117,13 @@ Lockdown.prototype.parseMessage = function(message) {
   $.each(data, function(index, item) {
     switch(item.event) {
     case 'egress':
-      self.updateHouse(item.data);
+      $(document).trigger('house.event', item.data);
       break;
     case 'change_mode':
       $(document).trigger('mode.change', item.data);
       break;
     default:
-      console.info(item.data);
+      console.info("Unrecognized WebSocket message received: " + item.data);
     }
   });
 };
@@ -125,12 +143,4 @@ Lockdown.prototype.updateDateTime = function() {
     minute = '0' + minute;
   }
   $('time').attr('datetime', hour + ':' + minute + ':' + second).text(hour + ':' + minute);
-};
-
-
-// Update the state of the one of the house entry points
-Lockdown.prototype.updateHouse = function(data) {
-  var state = data.value == '0' ? 'closed' : 'open';
-  $('#sensor_'+data.id).removeClass('open closed').addClass(state);
-  // $('#audio').attr('src', this.sounds[state]).get(0).play();
 };
