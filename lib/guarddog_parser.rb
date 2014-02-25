@@ -10,7 +10,7 @@ class GuarddogParser
       log_events(events) if options[:log]
       events.each do |event|
         update_sensor(event)
-        case event['result']['type']
+        case event['event']
         when 'egress'
           output << egress_state_change(event)
         end
@@ -23,20 +23,20 @@ private
 
   def log_events(events)
     events.each do |event|
-      Event.create :type => event['result']['type'],
-                   :data => events['result'].to_json,
+      Event.create :type => event['event'],
+                   :data => events['data'].to_json,
                    :created_at => Time.now
     end
   end
 
   def update_sensor(event)
-    if sensor = Sensor.where(:arduino_id => event['result']['id'].to_i).first
-      sensor.update(:value => event['result']['value'], :updated_at => Time.now)
+    if sensor = Sensor.where(:arduino_id => event['data']['id'].to_i).first
+      sensor.update(:value => event['data']['value'], :updated_at => Time.now)
     end
   end
 
   def egress_state_change(event)
-    if sensor = Sensor.where(:arduino_id => event['result']['id']).first
+    if sensor = Sensor.where(:arduino_id => event['data']['id']).first
       { :event => 'egress', :data => { :id => sensor.id, :value => sensor.value }}
     end
   end

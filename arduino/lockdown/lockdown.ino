@@ -30,9 +30,9 @@ void loop() {
 }
 
 void outputState(int i, int type) {
-  Serial.print("{\"result\":{\"type\":\"");
+  Serial.print("{\"event\":\"");
   Serial.print(TYPES[type]);
-  Serial.print("\",\"id\":");
+  Serial.print("\",\"data\":{\"id\":");
   Serial.print(i);
   Serial.print(",\"value\":");
   Serial.print(states[i]);
@@ -58,9 +58,9 @@ void checkForIncoming() {
   }
 
   if (incoming != "") {
-    if (incoming == "{\"method\":\"status\"}") {
+    if (incoming == "{\"event\":\"status\"}") {
       status();
-    } else if (incoming == "{\"method\":\"version\"}") {
+    } else if (incoming == "{\"event\":\"version\"}") {
       version();
     } else {
       error("unknown method");
