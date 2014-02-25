@@ -18,7 +18,6 @@ GEM
     eventmachine (1.0.3)
     haml (4.0.5)
       tilt
-    json (1.8.1)
     method_source (0.8.2)
     multi_json (1.8.4)
     pry (0.9.12.6)
@@ -69,7 +68,7 @@ PLATFORMS
 
 DEPENDENCIES
   haml
-  json
+  multi_json
   pry
   pry-debugger
   sass
