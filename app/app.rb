@@ -17,7 +17,7 @@ set :server, 'thin'
 set :sockets, []
 set :timer_running, false
 set :poll_tick, 0.5
-set :guarddog, Guarddog.new(ENV['USB'])
+set :guarddog, Guarddog.new(ENV['USB']) if ENV['USB']
 set :web_socket_parser, WebSocketParser.new
 set :guarddog_parser, GuarddogParser.new
 
@@ -32,7 +32,7 @@ end
 
 # Homepage
 get '/' do
-  start_polling unless settings.timer_running
+  start_polling
 
   if !request.websocket?
     @mode = Setting.first.mode
@@ -44,11 +44,13 @@ get '/' do
       ws.onopen do
         settings.sockets << ws
           logger.info "Socket opened: #{ws.to_s}"
-        status_response = settings.guarddog.status
-          logger.info "Status response: #{status_response.inspect}"
-        guarddog_reponse = settings.guarddog_parser.parse(status_response, :log => false)
-          logger.info "GuarddogParser response: #{guarddog_reponse.inspect}"
-        ws.send guarddog_reponse.to_json
+        if settings.respond_to? :guarddog
+          status_response = settings.guarddog.status
+            logger.info "Status response: #{status_response.inspect}"
+          guarddog_reponse = settings.guarddog_parser.parse(status_response, :log => false)
+            logger.info "GuarddogParser response: #{guarddog_reponse.inspect}"
+          ws.send guarddog_reponse.to_json
+        end
       end
       ws.onmessage do |msg|
           logger.info "WebSocket message received: #{msg.inspect}"
