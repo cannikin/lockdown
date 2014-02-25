@@ -32,10 +32,8 @@ end
 migration "create events" do
   database.create_table :events do
     primary_key :id
-    Integer     :arduino_id
     String      :type
-    String      :value
-    Integer     :millis
+    Text        :data
     DateTime    :created_at, :null => false
   end
 end
