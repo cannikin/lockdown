@@ -11,18 +11,20 @@ helpers do
 
   # Start checking for new events every so often
   def start_polling
-    settings.guarddog.connect!
-    EM.add_periodic_timer(settings.poll_tick) do
-      guarddog_response = settings.guarddog.poll
-        logger.info "Guarddog message received: #{guarddog_response.inspect}"
-      events = settings.guarddog_parser.parse(guarddog_response)
-        logger.info "GuarddogParser response: #{events.inspect}"
-      send_to_all(events) unless events.empty?
+    if !settings.timer_running and settings.respond_to? :guarddog
+      settings.guarddog.connect!
+      EM.add_periodic_timer(settings.poll_tick) do
+        guarddog_response = settings.guarddog.poll
+          logger.info "Guarddog message received: #{guarddog_response.inspect}"
+        events = settings.guarddog_parser.parse(guarddog_response)
+          logger.info "GuarddogParser response: #{events.inspect}"
+        send_to_all(events) unless events.empty?
+      end
+      EM.add_shutdown_hook do
+        settings.guarddog.close!
+      end
+      settings.timer_running = true
     end
-    EM.add_shutdown_hook do
-      settings.guarddog.close!
-    end
-    settings.timer_running = true
   end
 
   def class_for_sensor(sensor)
