@@ -55,7 +55,7 @@ class Guarddog
   # Pass other method calls over to the Arduino
   def method_missing(method_name, *args)
     if METHODS.include? method_name
-      write({ :method => method_name })
+      write({ :event => method_name })
       poll
     else
       super

@@ -30,9 +30,7 @@ void loop() {
 }
 
 void outputState(int i, int type) {
-  Serial.print("{\"event\":\"");
-  Serial.print(TYPES[type]);
-  Serial.print("\",\"data\":{\"id\":");
+  Serial.print("{\"event\":\"sensor\",\"data\":{\"id\":");
   Serial.print(i);
   Serial.print(",\"value\":");
   Serial.print(states[i]);
@@ -40,7 +38,6 @@ void outputState(int i, int type) {
   Serial.print(millis());
   Serial.println("}}");
 }
-
 
 void checkForIncoming() {
   incoming = "";

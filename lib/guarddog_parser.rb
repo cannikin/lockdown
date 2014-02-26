@@ -11,8 +11,8 @@ class GuarddogParser
       events.each do |event|
         update_sensor(event)
         case event['event']
-        when 'egress'
-          output << egress_state_change(event)
+        when 'sensor'
+          output << sensor_change(event)
         end
       end
     end
@@ -24,7 +24,7 @@ private
   def log_events(events)
     events.each do |event|
       Event.create :type => event['event'],
-                   :data => events['data'].to_json,
+                   :data => event['data'].to_json,
                    :created_at => Time.now
     end
   end
@@ -35,9 +35,9 @@ private
     end
   end
 
-  def egress_state_change(event)
+  def sensor_change(event)
     if sensor = Sensor.where(:arduino_id => event['data']['id']).first
-      { :event => 'egress', :data => { :id => sensor.id, :name => sensor.name, :value => sensor.value, :base_state => sensor.base_state }}
+      { :event => 'sensor_change', :data => { :id => sensor.id, :name => sensor.name, :value => sensor.value, :base_state => sensor.base_state }}
     end
   end
 
