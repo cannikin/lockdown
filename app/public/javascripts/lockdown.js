@@ -116,7 +116,7 @@ Lockdown.prototype.parseMessage = function(message) {
   var data = $.parseJSON(message);
   $.each(data, function(index, item) {
     switch(item.event) {
-    case 'egress':
+    case 'sensor_change':
       $(document).trigger('house.event', item.data);
       break;
     case 'change_mode':
