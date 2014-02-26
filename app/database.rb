@@ -38,6 +38,13 @@ migration "create events" do
   end
 end
 
+migration "add base_state to sensors" do
+  database.add_column :sensors, :base_state, Integer, :default => '0'
+end
+
+migration "add name to sensors" do
+  database.add_column :sensors, :name, String
+end
 
 # you can also alter tables
 # migration "everything's better with bling" do

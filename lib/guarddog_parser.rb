@@ -37,7 +37,7 @@ private
 
   def egress_state_change(event)
     if sensor = Sensor.where(:arduino_id => event['data']['id']).first
-      { :event => 'egress', :data => { :id => sensor.id, :value => sensor.value }}
+      { :event => 'egress', :data => { :id => sensor.id, :name => sensor.name, :value => sensor.value, :base_state => sensor.base_state }}
     end
   end
 

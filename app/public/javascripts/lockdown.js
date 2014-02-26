@@ -59,7 +59,7 @@ Lockdown.prototype.attachCustomEvents = function() {
 
   // Sensor has changed values, update house graphic
   $doc.on('house.event', function(e, data) {
-    var state = data.value == '0' ? 'closed' : 'open';
+    var state = data.value == data.base_state ? 'closed' : 'open';
     $('#sensor_'+data.id).removeClass('open closed').addClass(state);
   });
 

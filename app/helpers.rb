@@ -29,8 +29,8 @@ helpers do
 
   def class_for_sensor(sensor)
     classes = [sensor.type, sensor.layout.orientation]
-    classes << 'closed' if sensor.value == 0
-    classes << 'open' if sensor.value == 1
+    classes << 'closed' if sensor.value == sensor.base_state
+    classes << 'open' if sensor.value != sensor.base_state
     return classes.join(' ')
   end
 
