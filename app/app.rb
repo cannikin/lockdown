@@ -73,3 +73,9 @@ get '/status' do
   @sockets = settings.sockets
   haml :status
 end
+
+
+get '/motion' do
+  Event.create :type => 'motion', :data => params.to_json, :created_at => Time.now
+  200
+end
