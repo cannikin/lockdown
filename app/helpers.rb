@@ -1,5 +1,38 @@
 helpers do
 
+  # Starts a websocket and sets handlers
+  def start_websocket
+    request.websocket do |ws|
+      ws.onopen do
+        settings.sockets << ws
+          # logger.info "Socket opened: #{ws.to_s}"
+        if settings.respond_to? :guarddog
+          status_response = settings.guarddog.status
+            # logger.info "Status response: #{status_response.inspect}"
+          guarddog_reponse = settings.guarddog_parser.parse(status_response, :log => false)
+            # logger.info "GuarddogParser response: #{guarddog_reponse.inspect}"
+          ws.send guarddog_reponse.to_json
+        end
+      end
+      ws.onmessage do |msg|
+          # logger.info "WebSocket message received: #{msg.inspect}"
+        response = settings.web_socket_parser.parse(msg)
+          # logger.info "SocketParser response: #{response.inspect}"
+        send_to_all response unless response.empty?
+      end
+      ws.onclose do
+        settings.sockets.delete(ws)
+          # logger.info "Socket closed: #{ws.to_s}"
+      end
+    end
+  end
+
+  # Returns the html for the page
+  def index
+    @mode = settings.mode
+    @doors_and_windows = Sensor.filter(:type => ['door', 'window', 'garage-door'])
+    haml :index
+  end
   # Send a message to all websockets
   def send_to_all(message)
     EM.next_tick do
