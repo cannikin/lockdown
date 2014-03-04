@@ -1,6 +1,7 @@
 # Talks to Arduino speaking the Lockdown protocol. Turns JSON messages from
 # the Arduino into Ruby hashes
 
+require 'parser'
 require 'serialport'
 require 'json'
 # lets us query serial.ready? to see if there are any bytes waiting for us or
