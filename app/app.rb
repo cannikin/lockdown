@@ -49,15 +49,9 @@ get '/' do
 end
 
 
-# Get current status of all sensors
-get '/status' do
-  @guarddog = settings.guarddog
-  @sockets = settings.sockets
-  haml :status
-end
-
-
-get '/motion' do
-  Event.create :type => 'motion', :data => params.to_json, :created_at => Time.now
+# Called by Axis camera when motion is detected, should always return a 200
+get '/event' do
+  response = settings.http_parser.parse(params)
+  send_to_all(response) unless response.empty?
   200
 end
