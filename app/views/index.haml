@@ -11,21 +11,22 @@
     %script(src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js")
     %script(src="/javascripts/lockdown.js" type="text/javascript")
   %body(class="#{@mode.to_s}")
-    %audio#audio(src="/sounds/door-open.wav")
+    %audio#door-open(src="/sounds/door-open.wav")
+    %audio#door-closed(src="/sounds/door-closed.wav")
     .container
       #modes.row
         .col-sm-4
-          %a#day(href="/mode/day" data-mode="day" class="#{'active' if @mode == 'day'}") Day
+          %a#day(href="/mode/day" data-mode="day" class="#{'active' if @mode == :day}") Day
         .col-sm-4
-          %a#night(href="/mode/night" data-mode="night" class="#{'active' if @mode == 'night'}") Night
+          %a#night(href="/mode/night" data-mode="night" class="#{'active' if @mode == :night}") Night
         .col-sm-4
-          %a#away(href="/mode/away" data-mode="away" class="#{'active' if @mode == 'away'}") Away
+          %a#away(href="/mode/away" data-mode="away" class="#{'active' if @mode == :away}") Away
 
       #videos.row
         .left.col-sm-6
-          %img.video(src="http://10.0.0.20/mjpg/video.mjpg?resolution=1280x720&compression=30&fps=15")
+          %img.video(src="http://#{@camera_host}/mjpg/video.mjpg?resolution=1024x768&compression=30&fps=15")
         .right.col-sm-6
-          %img.video(src="http://placekitten.com/800/450")
+          %img.video(src="http://placekitten.com/1024/768")
 
       #house.row
         - @doors_and_windows.each do |sensor|
@@ -37,6 +38,8 @@
           %time(datetime="#{Time.now.strftime('%F %T')}")= Time.now.strftime('%-l:%M')
           %span= Time.now.strftime('%A %B %-d')
         #tomorrow.weather.col-sm-4
+
+    = haml :debug if settings.environment == :development
 
     :javascript
       var lockdown = new Lockdown();

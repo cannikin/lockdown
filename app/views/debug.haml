@@ -1,0 +1,25 @@
+:sass
+  #debug
+    margin: 40px 0
+    text-align: center
+
+#debug
+  %a.door-open.btn.btn-sm.btn-primary(href="#") Front Door Open
+  %a.door-closed.btn.btn-sm.btn-primary(href="#") Front Door Closed
+  %a.motion.btn.btn-sm.btn-primary(href="#") Motion (Stairs)
+
+:javascript
+  $('.door-open').on('click', function() {
+    $(document).trigger('house.event', { id:1, value:1, base_state:0 });
+    return false;
+  });
+
+  $('.door-closed').on('click', function() {
+    $(document).trigger('house.event', { id:1, value:0, base_state:0 });
+    return false;
+  });
+
+  $('.motion').on('click', function() {
+    $.get('/event?event=motion&location=stairs');
+    return false;
+  });

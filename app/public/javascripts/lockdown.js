@@ -60,7 +60,17 @@ Lockdown.prototype.attachCustomEvents = function() {
   // Sensor has changed values, update house graphic
   $doc.on('house.event', function(e, data) {
     var state = data.value == data.base_state ? 'closed' : 'open';
-    $('#sensor_'+data.id).removeClass('open closed').addClass(state);
+    var $el = $('#sensor_'+data.id);
+    if (!$el.hasClass(state)) {
+      $el.removeClass('open closed').addClass(state);
+      $('#door-'+state).get(0).play();
+    }
+  });
+
+
+  // Motion detected
+  $doc.on('motion', function(e, data) {
+    alert('Motion detected: ' + data.location);
   });
 
 
@@ -122,8 +132,11 @@ Lockdown.prototype.parseMessage = function(message) {
     case 'change_mode':
       $(document).trigger('mode.change', item.data);
       break;
+    case 'motion':
+      $(document).trigger('motion', item.data);
+      break;
     default:
-      console.info("Unrecognized WebSocket message received: " + item.data);
+      console.info("Unrecognized WebSocket message received: ", item);
     }
   });
 };
