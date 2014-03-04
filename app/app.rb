@@ -21,7 +21,7 @@ end
 configure :production do
   set :database, 'sqlite://db/production.db'
   set :camera_host, ENV['CAMERA_HOST']
-  $logger = Logger.new File.join(__FILE__,'log','production.log')
+  $logger = Logger.new File.join(File.dirname(__FILE__),'log','production.log')
 end
 
 require 'database'
