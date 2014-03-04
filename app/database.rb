@@ -39,11 +39,50 @@ migration "create events" do
 end
 
 migration "add base_state to sensors" do
-  database.add_column :sensors, :base_state, Integer, :default => '0'
+  database.add_column :sensors, :base_state, Integer, :default => 0
 end
 
 migration "add name to sensors" do
   database.add_column :sensors, :name, String
+end
+
+migration "create behaviors" do
+  database.create_table :behaviors do
+    primary_key :id
+    String      :mode
+    Boolean     :chime_on_sensor_change_from_base_state
+    Boolean     :text_on_sensor_change_from_base_state
+    Boolean     :chime_on_motion
+    Boolean     :text_on_motion
+  end
+end
+
+migration "add text numbers to settings" do
+  database.add_column :settings, :text_numbers, String
+end
+
+migration 'create users table' do
+  database.create_table :users do
+    primary_key :id
+    String      :username
+    String      :password
+  end
+end
+
+migration 'add phone numbers to settings' do
+  database.alter_table :settings do
+    rename_column :text_numbers, :contact_numbers
+    add_column    :from_phone_number, String
+  end
+end
+
+migration 'add image directory and s3 config to settings' do
+  database.alter_table :settings do
+    add_column :image_upload_path, String
+    add_column :s3_bucket, String
+    add_column :s3_access_key_id, String
+    add_column :s3_secret_access_key, String
+  end
 end
 
 # you can also alter tables

@@ -9,17 +9,24 @@ require 'helpers'
 require 'guarddog'
 require 'web_socket_parser'
 require 'guarddog_parser'
-require 'pry'
-require 'pry-debugger'
+require 'http_parser'
+require 'uploader'
 
 set :server, 'thin'
 set :sockets, []
 set :timer_running, false
-set :poll_tick, 0.5
+set :poll_tick, 1
 set :guarddog, Guarddog.new(ENV['USB']) if ENV['USB']
-set :web_socket_parser, WebSocketParser.new
-set :guarddog_parser, GuarddogParser.new
+set :web_socket_parser, WebSocketParser.new(settings, nil)
+set :guarddog_parser, GuarddogParser.new(settings, nil)
+set :http_parser, HttpParser.new(settings, nil)
+set :mode, Setting.first.mode.to_sym
+set :config, Setting.first
+set :uploader, Uploader.new(:path => settings.config.image_upload_path, :bucket => settings.config.s3_bucket, :access_key_id => settings.config.s3_access_key_id, :secret_access_key => settings.config.s3_secret_access_key)
 
+before do
+  logger.level = Logger::DEBUG
+end
 
 # For SASS stylesheets
 get '/*.css' do
