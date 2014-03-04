@@ -1,6 +1,6 @@
 # Parses messages from the client
 
-class WebSocketParser
+class WebSocketParser < Parser
 
   def parse(raw_message, options={})
     options = { :log => true }.merge(options)
@@ -11,17 +11,10 @@ class WebSocketParser
     case message['event']
     when 'change_mode'
       Setting.first.update(:mode => message['data']['mode'])
+      settings.mode = message['data']['mode'].to_sym
       output << { :event => 'change_mode', :data => { :mode => message['data']['mode'] }}
     end
     return output
-  end
-
-private
-
-  def log_event(message)
-    Event.create :type => message['event'],
-                 :data => message.to_json,
-                 :created_at => Time.now
   end
 
 end

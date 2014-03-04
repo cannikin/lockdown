@@ -1,6 +1,8 @@
 # Parses response output from Guarddog
 
-class GuarddogParser
+require 'parser'
+
+class GuarddogParser < Parser
 
   def parse(events, options={})
     options = { :log => true }.merge(options)
@@ -23,9 +25,7 @@ private
 
   def log_events(events)
     events.each do |event|
-      Event.create :type => event['event'],
-                   :data => event['data'].to_json,
-                   :created_at => Time.now
+      log_event(event)
     end
   end
 
