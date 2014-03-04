@@ -70,7 +70,7 @@ Lockdown.prototype.attachCustomEvents = function() {
 
   // Motion detected
   $doc.on('motion', function(e, data) {
-    alert('Motion detected: ' + data.location);
+    console.warn('Motion detected: ' + data.location);
   });
 
 

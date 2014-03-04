@@ -14,11 +14,7 @@ class HttpParser < Parser
       behavior = Behavior.where(:mode => settings.mode.to_s).first
       output << { :event => 'motion', :data => { :location => params[:location] }}
       if behavior.text_on_motion
-        begin
-          Comms.sms "Motion detected: #{params[:location]} http://air.local:4567"
-        rescue => e
-          logger.error "Problem sending text message #{e.message}\n#{e.backgtrace}"
-        end
+        Comms.sms "Motion detected: #{params[:location]} http://air.local:4567"
       end
     else
 

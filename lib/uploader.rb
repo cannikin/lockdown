@@ -2,20 +2,20 @@ require 'listen'
 
 class Uploader
 
-  attr_reader :path, :bucket, :last, :listener, :s3, :logger
+  attr_reader :path, :bucket, :last, :listener, :s3, :callback
 
-  def initialize(options)
-    @path = options[:path]
-    @bucket = options[:bucket]
+  def initialize(config, options={})
+    @path = config.image_upload_path
+    @bucket = config.s3_bucket
+    @callback = options[:callback]
     @last = []
     @uploading = false
-    @logger = Logger.new(STDOUT)
     setup_listener
-    setup_s3(options[:access_key_id], options[:secret_access_key])
-      logger.debug "Initialized Uploader."
+    setup_s3(config.s3_access_key_id, config.s3_secret_access_key)
+      $logger.debug "Initialized Uploader."
 
     listener.start
-      logger.debug "Watching for new files in #{path}."
+      $logger.debug "Watching for new files in #{path}."
   end
 
   def upload(files)
@@ -24,14 +24,15 @@ class Uploader
     files.each do |f|
       file = File.new(f)
       filename = file.path.split('/').last
-        logger.debug "Uploading file #{file.path}..."
+        $logger.debug "Uploading file #{file.path}..."
       object = s3.objects[filename].write(file, :acl => :public_read)
-        logger.debug "Upload of #{file.path} complete. URL: #{object.public_url}"
-        logger.debug "Deleting local file #{file.path}"
+        $logger.debug "Upload of #{file.path} complete. URL: #{object.public_url}"
+        $logger.debug "Deleting local file #{file.path}"
       File.delete(file)
       @last << object.public_url
     end
     @uploading = false
+    callback.call(@last) if callback
   end
 
   def uploading?

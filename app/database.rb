@@ -1,5 +1,3 @@
-set :database, 'sqlite://db/lockdown.db'
-
 migration "create sensors" do
   database.create_table :sensors do
     primary_key :id
@@ -84,6 +82,32 @@ migration 'add image directory and s3 config to settings' do
     add_column :s3_secret_access_key, String
   end
 end
+
+migration 'add mail settings' do
+  database.alter_table :settings do
+    add_column :mandrill_api_key, String
+  end
+end
+
+migration 'add twilio settings' do
+  database.alter_table :settings do
+    add_column :twilio_account_sid, String
+    add_column :twilio_auth_token, String
+  end
+end
+
+migration 'add contact_emails to settings' do
+  database.alter_table :settings do
+    add_column    :contact_emails, String
+  end
+end
+
+migration 'add from_email to settings' do
+  database.alter_table :settings do
+    add_column    :from_email, String
+  end
+end
+
 
 # you can also alter tables
 # migration "everything's better with bling" do

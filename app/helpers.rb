@@ -5,24 +5,24 @@ helpers do
     request.websocket do |ws|
       ws.onopen do
         settings.sockets << ws
-          logger.debug "Socket opened: #{ws.to_s}"
+          $logger.debug "Socket opened: #{ws.to_s}"
         if settings.respond_to? :guarddog
           status_response = settings.guarddog.status
-            # logger.debug "Status response: #{status_response.inspect}"
+            # $logger.debug "Status response: #{status_response.inspect}"
           guarddog_reponse = settings.guarddog_parser.parse(status_response, :log => false)
-            # logger.debug "GuarddogParser response: #{guarddog_reponse.inspect}"
+            # $logger.debug "GuarddogParser response: #{guarddog_reponse.inspect}"
           ws.send guarddog_reponse.to_json
         end
       end
       ws.onmessage do |msg|
-          logger.debug "WebSocket message received: #{msg.inspect}"
+          $logger.debug "WebSocket message received: #{msg.inspect}"
         response = settings.web_socket_parser.parse(msg)
-          logger.debug "SocketParser response: #{response.inspect}"
+          $logger.debug "SocketParser response: #{response.inspect}"
         send_to_all response unless response.empty?
       end
       ws.onclose do
         settings.sockets.delete(ws)
-          logger.debug "Socket closed: #{ws.to_s}"
+          $logger.debug "Socket closed: #{ws.to_s}"
       end
     end
   end
@@ -52,9 +52,9 @@ helpers do
     settings.guarddog.connect!
     EM.add_periodic_timer(settings.poll_tick) do
       guarddog_response = settings.guarddog.poll
-        # logger.info "Guarddog message received: #{guarddog_response.inspect}"
+        # $logger.debug "Guarddog message received: #{guarddog_response.inspect}"
       events = settings.guarddog_parser.parse(guarddog_response)
-        # logger.info "GuarddogParser response: #{events.inspect}"
+        # $logger.debug "GuarddogParser response: #{events.inspect}"
       send_to_all(events) unless events.empty?
     end
     EM.add_shutdown_hook do

@@ -1,14 +1,11 @@
 # Generic parser that others should inherit from. Handles logging events and
 # saving a reference to `settings` which is the Sinatra settingslication
-require 'comms'
-
 class Parser
 
-  attr_reader :settings, :logger
+  attr_reader :settings
 
-  def initialize(settings, logger)
+  def initialize(settings)
     @settings = settings
-    @logger = logger
   end
 
 private
