@@ -43,6 +43,7 @@ get '/' do
   if request.websocket?
     start_websocket
   else
+    protected!
     index
   end
 end
