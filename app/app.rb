@@ -13,11 +13,14 @@ require 'comms'
 
 configure :development do
   set :database, 'sqlite://db/development.db'
+  set :camera_host, ENV['DEV_CAMERA_HOST']
+
   $logger = Logger.new STDOUT
 end
 
 configure :production do
   set :database, 'sqlite://db/production.db'
+  set :camera_host, ENV['CAMERA_HOST']
   $logger = Logger.new File.join(__FILE__,'log','production.log')
 end
 

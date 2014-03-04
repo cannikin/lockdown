@@ -30,7 +30,6 @@ helpers do
 
   # Returns the html for the page
   def index
-    @camera_host = settings.environment == :development ? 'lockdown:cameron%20regatta@10.0.0.20' : 'lockdown:cameron regatta@10.0.0.20:10100'
     @mode = settings.mode
     @doors_and_windows = Sensor.filter(:type => ['door', 'window', 'garage-door'])
     haml :index
