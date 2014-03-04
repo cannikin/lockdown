@@ -1,12 +1,11 @@
 $:.unshift File.join(File.dirname(__FILE__), '..', 'lib')
+$:.unshift File.join(File.dirname(__FILE__))
 
-require 'sinatra'
-require 'sinatra-websocket'
-require 'sinatra/sequel'
-require './database'
-require './models'
-require './helpers'
-require 'sinatra/reloader' if development?
+require 'sinatra/reloader'
+#require 'sinatra-logger'
+require 'database'
+require 'models'
+require 'helpers'
 require 'guarddog'
 require 'web_socket_parser'
 require 'guarddog_parser'
