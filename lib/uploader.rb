@@ -51,7 +51,7 @@ private
   end
 
   def setup_s3(access_key_id, secret_access_key)
-    AWS.config :access_key_id => access_key_id, :secret_access_key => secret_access_key
+    AWS.config :access_key_id => access_key_id, :secret_access_key => secret_access_key, :logger => $logger
     @s3 = AWS.s3.buckets[bucket]
   end
 
