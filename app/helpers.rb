@@ -97,12 +97,12 @@ helpers do
   end
 
   def authorized?
-    @auth ||= Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? and @auth.basic? and @auth.credentials and User.where(:username => @auth.credentials.first, :password => @auth.credentials.last).first
-  end
-
-  def file_upload(files)
-    logger.info files.inspect
+    if params[:access_key] == settings.config.access_key
+      return true
+    else
+      @auth ||= Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? and @auth.basic? and @auth.credentials and User.where(:username => @auth.credentials.first, :password => @auth.credentials.last).first
+    end
   end
 
 end

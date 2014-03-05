@@ -108,6 +108,12 @@ migration 'add from_email to settings' do
   end
 end
 
+migration 'adds access_key to settings' do
+  database.alter_table :settings do
+    add_column :access_key, String
+  end
+end
+
 
 # you can also alter tables
 # migration "everything's better with bling" do
