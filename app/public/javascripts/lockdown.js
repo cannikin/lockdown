@@ -136,7 +136,8 @@ Lockdown.prototype.parseMessage = function(message) {
       $(document).trigger('motion', item.data);
       break;
     default:
-      console.info("Unrecognized WebSocket message received: ", item);
+      console.warn("Unrecognized WebSocket message received: ", item);
+      break;
     }
   });
 };
