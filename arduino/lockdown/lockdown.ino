@@ -16,7 +16,7 @@ void setup() {
   //start serial connection
   Serial.begin(57600);
   //configure pin2 as an input and enable the internal pull-up resistor
-  for (int i=22; i<54; i++) {
+  for (int i=22; i<50; i++) {
     pinMode(i, INPUT_PULLUP);
     states[i] = lastStates[i] = digitalRead(i);
   }
