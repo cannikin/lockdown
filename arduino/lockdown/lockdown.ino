@@ -9,8 +9,8 @@ const String TYPES[] = { "egress", "motion", "trip" };
 String incoming = "";
 
 // All sensor states
-int states[54];
-int lastStates[54];
+int states[50];
+int lastStates[50];
 
 void setup() {
   //start serial connection
