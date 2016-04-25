@@ -67,7 +67,7 @@ void checkForIncoming() {
 
 
 void checkAllSensors() {
-  for (int i=22; i<54; i++) {
+  for (int i=22; i<50; i++) {
     inputStatus(i, true);
   }
 
@@ -80,7 +80,7 @@ void checkAllSensors() {
 
 // Return status all inputs
 void status() {
-  for (int i=22; i<54; i++) {
+  for (int i=22; i<50; i++) {
     outputState(i, EGRESS);
   }
 }
